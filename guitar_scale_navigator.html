@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Guitar Scale Navigator - ROCK EDITION</title>
+    <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=M+PLUS+1p:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'M PLUS 1p', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+            color: #e0e0e0;
+        }
+
+        .app-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 12px;
+            gap: 12px;
+        }
+
+        /* ヘッダー - ROCK STYLE */
+        .header {
+            background: linear-gradient(135deg, #8b0000 0%, #cc0000 50%, #8b0000 100%);
+            color: #ffffff;
+            padding: 12px 20px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            border: 2px solid #ff4444;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+        }
+
+        .header h1 {
+            font-family: 'Russo One', sans-serif;
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .header select {
+            padding: 8px 32px 8px 12px;
+            border: 2px solid #ff4444;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: 'M PLUS 1p', sans-serif;
+            font-weight: 700;
+            background: #2d2d2d;
+            color: #ffffff;
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ff4444' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .header select:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(255, 68, 68, 0.5);
+        }
+
+        /* 指板エリア */
+        .fretboard-area {
+            background: #2d2d2d;
+            border-radius: 4px;
+            border: 2px solid #444;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .fretboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-shrink: 0;
+        }
+
+        .fretboard-header h2 {
+            color: #ff4444;
+            font-family: 'Russo One', sans-serif;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .display-options {
+            display: flex;
+            gap: 16px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #ff4444;
+        }
+
+        .checkbox-group label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #e0e0e0;
+        }
+
+        /* 指板ラッパー */
+        .fretboard-wrapper {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ローズウッド指板 - ダーク */
+        .fretboard {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            background: 
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0,0,0,0.1) 2px,
+                    rgba(0,0,0,0.1) 4px
+                ),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 8px,
+                    rgba(60,30,15,0.2) 8px,
+                    rgba(60,30,15,0.25) 12px,
+                    transparent 12px,
+                    transparent 20px
+                ),
+                linear-gradient(
+                    90deg,
+                    #2a1810 0%,
+                    #3d261a 5%,
+                    #4a2f1c 15%,
+                    #3d261a 25%,
+                    #4a2f1c 35%,
+                    #3d261a 50%,
+                    #4a2f1c 65%,
+                    #3d261a 75%,
+                    #4a2f1c 85%,
+                    #3d261a 95%,
+                    #2a1810 100%
+                );
+            padding: 0;
+            border-radius: 4px;
+            height: 200px;
+            box-shadow: 
+                inset 0 2px 4px rgba(0,0,0,0.5),
+                inset 0 -2px 4px rgba(255,255,255,0.05),
+                0 4px 8px rgba(0,0,0,0.4);
+            border: 3px solid #1a0f08;
+            overflow: hidden;
+        }
+
+        /* フレット線 - シルバー */
+        .fret-lines {
+            position: absolute;
+            top: 0;
+            left: 30px;
+            right: 0;
+            bottom: 0;
+            display: grid;
+            grid-template-columns: repeat(18, 1fr);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .fret-line {
+            border-right: 3px solid;
+            border-image: linear-gradient(
+                180deg,
+                #666 0%,
+                #999 15%,
+                #ccc 30%,
+                #999 50%,
+                #ccc 70%,
+                #999 85%,
+                #666 100%
+            ) 1;
+        }
+
+        /* 弦のコンテナ */
+        .strings-container {
+            position: relative;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            z-index: 2;
+        }
+
+        .string {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 30px repeat(18, 1fr);
+            gap: 0;
+            align-items: center;
+            position: relative;
+        }
+
+        .string-label {
+            font-weight: 800;
+            font-size: 11px;
+            color: #ff4444;
+            text-align: center;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+            padding: 2px;
+            z-index: 3;
+        }
+
+        .fret {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            min-height: 28px;
+        }
+
+        /* 弦の表現 - スチール弦 */
+        .fret::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1.5px;
+            background: linear-gradient(
+                180deg,
+                #c0c0c0 0%,
+                #808080 30%,
+                #606060 50%,
+                #808080 70%,
+                #c0c0c0 100%
+            );
+            transform: translateY(-50%);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            border-radius: 1px;
+        }
+
+        /* 1弦（最も細い） */
+        .string:first-child .fret::before {
+            height: 1px;
+        }
+
+        /* 2弦 */
+        .string:nth-child(2) .fret::before {
+            height: 1.2px;
+        }
+
+        /* 3弦 */
+        .string:nth-child(3) .fret::before {
+            height: 1.5px;
+        }
+
+        /* 4弦 */
+        .string:nth-child(4) .fret::before {
+            height: 2px;
+        }
+
+        /* 5弦 */
+        .string:nth-child(5) .fret::before {
+            height: 2.5px;
+        }
+
+        /* 6弦（最も太い） */
+        .string:last-child .fret::before {
+            height: 3px;
+            background: linear-gradient(
+                180deg,
+                #a0a0a0 0%,
+                #707070 30%,
+                #505050 50%,
+                #707070 70%,
+                #a0a0a0 100%
+            );
+        }
+
+        .note-marker {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 9px;
+            z-index: 4;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.15s ease;
+        }
+
+        .note-marker.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* ルート音：赤 */
+        .note-marker.root {
+            background: linear-gradient(145deg, #ff4444, #cc0000);
+            color: white;
+            box-shadow: 
+                0 0 10px rgba(255, 0, 0, 0.6),
+                inset 0 1px 0 rgba(255,255,255,0.3);
+            text-shadow: 0 1px 1px rgba(0,0,0,0.5);
+        }
+
+        /* スケール音：ゴールド */
+        .note-marker.scale-note {
+            background: linear-gradient(145deg, #ffd700, #b8860b);
+            color: #1a1a1a;
+            box-shadow: 
+                0 0 8px rgba(255, 215, 0, 0.5),
+                inset 0 1px 0 rgba(255,255,255,0.4);
+            text-shadow: 0 1px 0 rgba(255,255,255,0.3);
+        }
+
+        /* その他の音 */
+        .note-marker.other-note {
+            background: rgba(255, 255, 255, 0.15);
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 8px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        /* フレット番号 */
+        .fret-numbers {
+            display: grid;
+            grid-template-columns: 30px repeat(18, 1fr);
+            gap: 0;
+            padding: 6px 0 2px 0;
+            flex-shrink: 0;
+            background: transparent;
+        }
+
+        .fret-number {
+            text-align: center;
+            font-size: 11px;
+            color: #888;
+            font-weight: 800;
+        }
+
+        /* ポジションマーク */
+        .position-markers {
+            display: grid;
+            grid-template-columns: 30px repeat(18, 1fr);
+            gap: 0;
+            padding: 0 0 2px 0;
+            flex-shrink: 0;
+        }
+
+        .position-marker {
+            text-align: center;
+            font-size: 10px;
+            color: #ff4444;
+            text-shadow: 0 0 4px rgba(255, 68, 68, 0.4);
+        }
+
+        /* 下部パネルエリア */
+        .bottom-panels {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+        }
+
+        .bottom-panels-row2 {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .panel {
+            background: #2d2d2d;
+            border-radius: 4px;
+            border: 2px solid #444;
+            padding: 14px;
+        }
+
+        .panel h2 {
+            color: #ff4444;
+            font-family: 'Russo One', sans-serif;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* スケール情報 */
+        .scale-notes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .scale-note-badge {
+            padding: 4px 10px;
+            background: linear-gradient(145deg, #ffd700, #b8860b);
+            color: #1a1a1a;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .scale-note-badge.root {
+            background: linear-gradient(145deg, #ff4444, #cc0000);
+            color: white;
+        }
+
+        .scale-formula {
+            margin-top: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #888;
+        }
+
+        /* チューニング */
+        .tuning-presets {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .preset-btn {
+            padding: 6px 8px;
+            border: 2px solid #444;
+            border-radius: 4px;
+            background: #1a1a1a;
+            font-size: 11px;
+            font-family: 'M PLUS 1p', sans-serif;
+            font-weight: 700;
+            color: #e0e0e0;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .preset-btn:hover {
+            border-color: #ff4444;
+            background: #2d2d2d;
+        }
+
+        .preset-btn.active {
+            background: linear-gradient(145deg, #ff4444, #cc0000);
+            border-color: #ff4444;
+            color: white;
+        }
+
+        .tuning-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 4px;
+        }
+
+        .tuning-item {
+            text-align: center;
+        }
+
+        .tuning-item label {
+            display: block;
+            font-size: 9px;
+            font-weight: 700;
+            color: #888;
+            margin-bottom: 3px;
+        }
+
+        .tuning-item select {
+            width: 100%;
+            padding: 4px 2px;
+            border: 2px solid #444;
+            border-radius: 4px;
+            font-size: 11px;
+            font-family: 'M PLUS 1p', sans-serif;
+            font-weight: 700;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            text-align: center;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        /* 13音テーブル */
+        .intervals-compact {
+            display: grid;
+            grid-template-columns: repeat(13, 1fr);
+            gap: 3px;
+        }
+
+        .interval-cell {
+            text-align: center;
+            padding: 6px 2px;
+            background: #1a1a1a;
+            border-radius: 4px;
+            font-size: 11px;
+            border: 1px solid #444;
+        }
+
+        .interval-cell .note {
+            font-weight: 800;
+            font-size: 13px;
+            margin-bottom: 2px;
+        }
+
+        .interval-cell .degree {
+            color: #888;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .interval-cell.root {
+            background: linear-gradient(145deg, #ff4444, #cc0000);
+            color: white;
+            border-color: #ff4444;
+        }
+
+        .interval-cell.root .degree {
+            color: rgba(255,255,255,0.8);
+        }
+
+        .interval-cell.in-scale {
+            background: linear-gradient(145deg, #ffd700, #b8860b);
+            color: #1a1a1a;
+            border-color: #ffd700;
+        }
+
+        .interval-cell.in-scale .degree {
+            color: rgba(26, 26, 26, 0.7);
+        }
+
+        /* メトロノーム */
+        .metronome-panel {
+            background: #2d2d2d;
+            border-radius: 4px;
+            border: 2px solid #444;
+            padding: 14px;
+        }
+
+        .metronome-panel h2 {
+            color: #ff4444;
+            font-family: 'Russo One', sans-serif;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .metronome-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .bpm-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bpm-display {
+            background: #1a1a1a;
+            border: 2px solid #ff4444;
+            border-radius: 4px;
+            padding: 8px 16px;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .bpm-value {
+            font-family: 'Russo One', sans-serif;
+            font-size: 24px;
+            color: #ff4444;
+        }
+
+        .bpm-label {
+            font-size: 10px;
+            color: #888;
+            font-weight: 700;
+        }
+
+        .bpm-btn {
+            width: 36px;
+            height: 36px;
+            border: 2px solid #444;
+            border-radius: 4px;
+            background: #1a1a1a;
+            font-size: 18px;
+            font-weight: 700;
+            color: #ff4444;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .bpm-btn:hover {
+            border-color: #ff4444;
+            background: #2d2d2d;
+        }
+
+        .bpm-btn:active {
+            background: #ff4444;
+            color: white;
+        }
+
+        .metro-btn {
+            padding: 10px 20px;
+            border: 2px solid transparent;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: 'Russo One', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .metro-btn.start {
+            background: linear-gradient(145deg, #4CAF50, #388E3C);
+            color: white;
+            border-color: #4CAF50;
+        }
+
+        .metro-btn.start:hover {
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+        }
+
+        .metro-btn.start.active {
+            background: linear-gradient(145deg, #ff4444, #cc0000);
+            border-color: #ff4444;
+        }
+
+        .metro-btn.start.active:hover {
+            box-shadow: 0 0 10px rgba(255, 68, 68, 0.5);
+        }
+
+        .metro-btn.tap {
+            background: linear-gradient(145deg, #ffd700, #b8860b);
+            color: #1a1a1a;
+            border-color: #ffd700;
+        }
+
+        .metro-btn.tap:hover {
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .time-sig-select {
+            padding: 8px 12px;
+            border: 2px solid #444;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: 'M PLUS 1p', sans-serif;
+            font-weight: 700;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            cursor: pointer;
+        }
+
+        .beat-indicators {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .beat-dot {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ff4444;
+            border-radius: 50%;
+            background: #1a1a1a;
+            transition: all 0.1s ease;
+        }
+
+        .beat-dot.active {
+            background: #ff4444;
+            box-shadow: 0 0 10px rgba(255, 68, 68, 0.8);
+        }
+
+        .beat-dot.first {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* モバイル対応 */
+        @media (max-width: 900px) {
+            .bottom-panels {
+                grid-template-columns: 1fr;
+            }
+
+            .fretboard-wrapper {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .fretboard, .fret-numbers, .position-markers {
+                min-width: 700px;
+            }
+
+            .intervals-compact {
+                grid-template-columns: repeat(7, 1fr);
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+
+            .header-controls {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .metronome-controls {
+                justify-content: center;
+            }
+
+            .tuning-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- ヘッダー -->
+        <header class="header">
+            <h1>🎸 Guitar Scale Navigator</h1>
+            <div class="header-controls">
+                <select id="keySelect" onchange="updateDisplay()">
+                    <option value="0">C</option>
+                    <option value="1">C# / Db</option>
+                    <option value="2">D</option>
+                    <option value="3">D# / Eb</option>
+                    <option value="4">E</option>
+                    <option value="5">F</option>
+                    <option value="6">F# / Gb</option>
+                    <option value="7">G</option>
+                    <option value="8">G# / Ab</option>
+                    <option value="9">A</option>
+                    <option value="10">A# / Bb</option>
+                    <option value="11">B</option>
+                </select>
+                <select id="scaleSelect" onchange="updateDisplay()">
+                    <optgroup label="基本系">
+                        <option value="major">メジャー</option>
+                        <option value="natural_minor">ナチュラルマイナー</option>
+                        <option value="harmonic_minor">ハーモニックマイナー</option>
+                        <option value="melodic_minor">メロディックマイナー</option>
+                    </optgroup>
+                    <optgroup label="モード系">
+                        <option value="ionian">イオニアン</option>
+                        <option value="dorian">ドリアン</option>
+                        <option value="phrygian">フリジアン</option>
+                        <option value="lydian">リディアン</option>
+                        <option value="mixolydian">ミクソリディアン</option>
+                        <option value="aeolian">エオリアン</option>
+                        <option value="locrian">ロクリアン</option>
+                    </optgroup>
+                    <optgroup label="ペンタ・ブルース">
+                        <option value="major_penta">メジャーペンタ</option>
+                        <option value="minor_penta">マイナーペンタ</option>
+                        <option value="blues">ブルース</option>
+                        <option value="major_blues">メジャーブルース</option>
+                    </optgroup>
+                    <optgroup label="シンメトリック">
+                        <option value="whole_tone">ホールトーン</option>
+                        <option value="diminished">ディミニッシュ H-W</option>
+                        <option value="diminished_wh">ディミニッシュ W-H</option>
+                        <option value="chromatic">クロマティック</option>
+                    </optgroup>
+                    <optgroup label="ジャズ系">
+                        <option value="altered">オルタード</option>
+                        <option value="lydian_b7">リディアン♭7</option>
+                        <option value="super_locrian">スーパーロクリアン</option>
+                        <option value="lydian_aug">リディアン#5</option>
+                        <option value="locrian_nat2">ロクリアン♮2</option>
+                        <option value="mixo_b6">ミクソリディアン♭6</option>
+                        <option value="dorian_b2">ドリアン♭2</option>
+                        <option value="bebop_major">ビバップメジャー</option>
+                        <option value="bebop_dominant">ビバップドミナント</option>
+                        <option value="bebop_minor">ビバップマイナー</option>
+                    </optgroup>
+                    <optgroup label="エスニック">
+                        <option value="spanish_phrygian">スパニッシュフリジアン</option>
+                        <option value="hungarian_minor">ハンガリアンマイナー</option>
+                        <option value="double_harmonic">ダブルハーモニック</option>
+                        <option value="japanese_in">都節</option>
+                        <option value="japanese_yo">民謡</option>
+                        <option value="hirajoshi">平調子</option>
+                    </optgroup>
+                </select>
+            </div>
+        </header>
+
+        <!-- 指板エリア -->
+        <main class="fretboard-area">
+            <div class="fretboard-header">
+                <h2>Fretboard Position</h2>
+                <div class="display-options">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="showAllNotes" onchange="updateDisplay()">
+                        <label for="showAllNotes">全ての音</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="showIntervals" onchange="updateDisplay()">
+                        <label for="showIntervals">度数表示</label>
+                    </div>
+                </div>
+            </div>
+            <div class="fretboard-wrapper">
+                <div class="fretboard" id="fretboard">
+                    <div class="fret-lines" id="fretLines"></div>
+                    <div class="strings-container" id="stringsContainer"></div>
+                </div>
+                <div class="fret-numbers" id="fretNumbers"></div>
+                <div class="position-markers" id="positionMarkers"></div>
+            </div>
+        </main>
+
+        <!-- 下部パネル -->
+        <div class="bottom-panels">
+            <!-- スケール構成音 -->
+            <div class="panel">
+                <h2>🎵 Scale Notes</h2>
+                <div class="scale-notes" id="scaleNotes"></div>
+                <div class="scale-formula" id="scaleFormula"></div>
+            </div>
+
+            <!-- チューニング -->
+            <div class="panel">
+                <h2>🔧 Tuning</h2>
+                <div class="tuning-presets">
+                    <button class="preset-btn active" onclick="setTuning('standard')">Standard</button>
+                    <button class="preset-btn" onclick="setTuning('dropD')">Drop D</button>
+                    <button class="preset-btn" onclick="setTuning('halfDown')">Half Down</button>
+                    <button class="preset-btn" onclick="setTuning('openG')">Open G</button>
+                </div>
+                <div class="tuning-grid">
+                    <div class="tuning-item">
+                        <label>6弦</label>
+                        <select id="string6" onchange="updateDisplay()">
+                            <option value="4">E</option>
+                            <option value="3">Eb</option>
+                            <option value="2">D</option>
+                            <option value="1">Db</option>
+                            <option value="0">C</option>
+                        </select>
+                    </div>
+                    <div class="tuning-item">
+                        <label>5弦</label>
+                        <select id="string5" onchange="updateDisplay()">
+                            <option value="9">A</option>
+                            <option value="8">Ab</option>
+                            <option value="7">G</option>
+                            <option value="6">Gb</option>
+                        </select>
+                    </div>
+                    <div class="tuning-item">
+                        <label>4弦</label>
+                        <select id="string4" onchange="updateDisplay()">
+                            <option value="2">D</option>
+                            <option value="1">Db</option>
+                            <option value="0">C</option>
+                            <option value="11">B</option>
+                        </select>
+                    </div>
+                    <div class="tuning-item">
+                        <label>3弦</label>
+                        <select id="string3" onchange="updateDisplay()">
+                            <option value="7">G</option>
+                            <option value="6">Gb</option>
+                            <option value="5">F</option>
+                        </select>
+                    </div>
+                    <div class="tuning-item">
+                        <label>2弦</label>
+                        <select id="string2" onchange="updateDisplay()">
+                            <option value="11">B</option>
+                            <option value="10">Bb</option>
+                            <option value="9">A</option>
+                        </select>
+                    </div>
+                    <div class="tuning-item">
+                        <label>1弦</label>
+                        <select id="string1" onchange="updateDisplay()">
+                            <option value="4">E</option>
+                            <option value="3">Eb</option>
+                            <option value="2">D</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 13音インターバル -->
+            <div class="panel">
+                <h2>📊 Intervals</h2>
+                <div class="intervals-compact" id="intervalsCompact"></div>
+            </div>
+        </div>
+
+        <!-- メトロノーム -->
+        <div class="bottom-panels-row2">
+            <div class="metronome-panel">
+                <h2>🥁 Metronome</h2>
+                <div class="metronome-controls">
+                    <div class="bpm-control">
+                        <button class="bpm-btn" onclick="changeBPM(-5)">-</button>
+                        <div class="bpm-display">
+                            <div class="bpm-value" id="bpmValue">120</div>
+                            <div class="bpm-label">BPM</div>
+                        </div>
+                        <button class="bpm-btn" onclick="changeBPM(5)">+</button>
+                    </div>
+                    <select class="time-sig-select" id="timeSigSelect" onchange="changeTimeSignature()">
+                        <option value="4">4/4</option>
+                        <option value="3">3/4</option>
+                        <option value="2">2/4</option>
+                        <option value="6">6/8</option>
+                    </select>
+                    <div class="beat-indicators" id="beatIndicators">
+                        <div class="beat-dot first"></div>
+                        <div class="beat-dot"></div>
+                        <div class="beat-dot"></div>
+                        <div class="beat-dot"></div>
+                    </div>
+                    <button class="metro-btn start" id="startBtn" onclick="toggleMetronome()">START</button>
+                    <button class="metro-btn tap" id="tapBtn" onclick="handleTap()">TAP</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+
+        const INTERVALS = [
+            { short: 'R', full: 'Root' },
+            { short: 'm2', full: '短2度' },
+            { short: 'M2', full: '長2度' },
+            { short: 'm3', full: '短3度' },
+            { short: 'M3', full: '長3度' },
+            { short: 'P4', full: '完4度' },
+            { short: 'TT', full: '増4/減5' },
+            { short: 'P5', full: '完5度' },
+            { short: 'm6', full: '短6度' },
+            { short: 'M6', full: '長6度' },
+            { short: 'm7', full: '短7度' },
+            { short: 'M7', full: '長7度' },
+            { short: '8ve', full: 'Oct' }
+        ];
+
+        const SCALES = {
+            major: { intervals: [0, 2, 4, 5, 7, 9, 11], formula: 'W-W-H-W-W-W-H' },
+            natural_minor: { intervals: [0, 2, 3, 5, 7, 8, 10], formula: 'W-H-W-W-H-W-W' },
+            harmonic_minor: { intervals: [0, 2, 3, 5, 7, 8, 11], formula: 'W-H-W-W-H-A2-H' },
+            melodic_minor: { intervals: [0, 2, 3, 5, 7, 9, 11], formula: 'W-H-W-W-W-W-H' },
+            ionian: { intervals: [0, 2, 4, 5, 7, 9, 11], formula: 'W-W-H-W-W-W-H' },
+            dorian: { intervals: [0, 2, 3, 5, 7, 9, 10], formula: 'W-H-W-W-W-H-W' },
+            phrygian: { intervals: [0, 1, 3, 5, 7, 8, 10], formula: 'H-W-W-W-H-W-W' },
+            lydian: { intervals: [0, 2, 4, 6, 7, 9, 11], formula: 'W-W-W-H-W-W-H' },
+            mixolydian: { intervals: [0, 2, 4, 5, 7, 9, 10], formula: 'W-W-H-W-W-H-W' },
+            aeolian: { intervals: [0, 2, 3, 5, 7, 8, 10], formula: 'W-H-W-W-H-W-W' },
+            locrian: { intervals: [0, 1, 3, 5, 6, 8, 10], formula: 'H-W-W-H-W-W-W' },
+            major_penta: { intervals: [0, 2, 4, 7, 9], formula: 'W-W-m3-W-m3' },
+            minor_penta: { intervals: [0, 3, 5, 7, 10], formula: 'm3-W-W-m3-W' },
+            blues: { intervals: [0, 3, 5, 6, 7, 10], formula: 'm3-W-H-H-m3-W' },
+            major_blues: { intervals: [0, 2, 3, 4, 7, 9], formula: 'W-H-H-m3-W-m3' },
+            whole_tone: { intervals: [0, 2, 4, 6, 8, 10], formula: 'W-W-W-W-W-W' },
+            diminished: { intervals: [0, 1, 3, 4, 6, 7, 9, 10], formula: 'H-W-H-W-H-W-H-W' },
+            diminished_wh: { intervals: [0, 2, 3, 5, 6, 8, 9, 11], formula: 'W-H-W-H-W-H-W-H' },
+            chromatic: { intervals: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], formula: 'All Half' },
+            altered: { intervals: [0, 1, 3, 4, 6, 8, 10], formula: 'H-W-H-W-W-W-W' },
+            lydian_b7: { intervals: [0, 2, 4, 6, 7, 9, 10], formula: 'W-W-W-H-W-H-W' },
+            super_locrian: { intervals: [0, 1, 3, 4, 6, 8, 10], formula: 'H-W-H-W-W-W-W' },
+            lydian_aug: { intervals: [0, 2, 4, 6, 8, 9, 11], formula: 'W-W-W-W-H-W-H' },
+            locrian_nat2: { intervals: [0, 2, 3, 5, 6, 8, 10], formula: 'W-H-W-H-W-W-W' },
+            mixo_b6: { intervals: [0, 2, 4, 5, 7, 8, 10], formula: 'W-W-H-W-H-W-W' },
+            dorian_b2: { intervals: [0, 1, 3, 5, 7, 9, 10], formula: 'H-W-W-W-W-H-W' },
+            bebop_major: { intervals: [0, 2, 4, 5, 7, 8, 9, 11], formula: 'W-W-H-W-H-H-W-H' },
+            bebop_dominant: { intervals: [0, 2, 4, 5, 7, 9, 10, 11], formula: 'W-W-H-W-W-H-H-H' },
+            bebop_minor: { intervals: [0, 2, 3, 5, 7, 8, 9, 10], formula: 'W-H-W-W-H-H-H-W' },
+            spanish_phrygian: { intervals: [0, 1, 4, 5, 7, 8, 10], formula: 'H-A2-H-W-H-W-W' },
+            hungarian_minor: { intervals: [0, 2, 3, 6, 7, 8, 11], formula: 'W-H-A2-H-H-A2-H' },
+            double_harmonic: { intervals: [0, 1, 4, 5, 7, 8, 11], formula: 'H-A2-H-W-H-A2-H' },
+            japanese_in: { intervals: [0, 1, 5, 7, 8], formula: 'H-P4-W-H-P4' },
+            japanese_yo: { intervals: [0, 2, 5, 7, 9], formula: 'W-m3-W-W-m3' },
+            hirajoshi: { intervals: [0, 2, 3, 7, 8], formula: 'W-H-P4-H-P4' }
+        };
+
+        function setTuning(preset) {
+            const presets = {
+                standard: [4, 9, 2, 7, 11, 4],
+                dropD: [2, 9, 2, 7, 11, 4],
+                halfDown: [3, 8, 1, 6, 10, 3],
+                openG: [2, 7, 2, 7, 11, 2]
+            };
+            const tuning = presets[preset];
+            document.getElementById('string6').value = tuning[0];
+            document.getElementById('string5').value = tuning[1];
+            document.getElementById('string4').value = tuning[2];
+            document.getElementById('string3').value = tuning[3];
+            document.getElementById('string2').value = tuning[4];
+            document.getElementById('string1').value = tuning[5];
+            document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            updateDisplay();
+        }
+
+        function getNoteName(noteIndex) {
+            return NOTE_NAMES[((noteIndex % 12) + 12) % 12];
+        }
+
+        function getScaleNotes(root, scaleType) {
+            return SCALES[scaleType].intervals.map(interval => (root + interval) % 12);
+        }
+
+        function updateIntervalsCompact() {
+            const root = parseInt(document.getElementById('keySelect').value);
+            const scaleType = document.getElementById('scaleSelect').value;
+            const scaleNotes = getScaleNotes(root, scaleType);
+            const container = document.getElementById('intervalsCompact');
+            let html = '';
+            for (let i = 0; i <= 12; i++) {
+                const noteIndex = (root + i) % 12;
+                const isRoot = i === 0 || i === 12;
+                const isInScale = scaleNotes.includes(i % 12);
+                let cellClass = 'interval-cell';
+                if (isRoot) cellClass += ' root';
+                else if (isInScale) cellClass += ' in-scale';
+                html += `<div class="${cellClass}"><div class="note">${getNoteName(noteIndex)}</div><div class="degree">${INTERVALS[i].short}</div></div>`;
+            }
+            container.innerHTML = html;
+        }
+
+        function updateScaleInfo() {
+            const root = parseInt(document.getElementById('keySelect').value);
+            const scaleType = document.getElementById('scaleSelect').value;
+            const scale = SCALES[scaleType];
+            const scaleNotes = getScaleNotes(root, scaleType);
+            const notesDiv = document.getElementById('scaleNotes');
+            notesDiv.innerHTML = scaleNotes.map((note, i) => 
+                `<span class="scale-note-badge ${i === 0 ? 'root' : ''}">${getNoteName(note)}</span>`
+            ).join('');
+            document.getElementById('scaleFormula').textContent = scale.formula;
+        }
+
+        function updateFretboard() {
+            const root = parseInt(document.getElementById('keySelect').value);
+            const scaleType = document.getElementById('scaleSelect').value;
+            const scaleNotes = getScaleNotes(root, scaleType);
+            const showAllNotes = document.getElementById('showAllNotes').checked;
+            const showIntervals = document.getElementById('showIntervals').checked;
+            
+            const tuning = [
+                parseInt(document.getElementById('string6').value),
+                parseInt(document.getElementById('string5').value),
+                parseInt(document.getElementById('string4').value),
+                parseInt(document.getElementById('string3').value),
+                parseInt(document.getElementById('string2').value),
+                parseInt(document.getElementById('string1').value)
+            ];
+
+            const fretLines = document.getElementById('fretLines');
+            let fretLinesHtml = '';
+            for (let f = 1; f <= 18; f++) {
+                fretLinesHtml += '<div class="fret-line"></div>';
+            }
+            fretLines.innerHTML = fretLinesHtml;
+
+            const stringsContainer = document.getElementById('stringsContainer');
+            let html = '';
+            for (let s = 5; s >= 0; s--) {
+                const openNote = tuning[s];
+                html += `<div class="string"><div class="string-label">${getNoteName(openNote)}</div>`;
+                for (let f = 1; f <= 18; f++) {
+                    const noteIndex = (openNote + f) % 12;
+                    const isRoot = noteIndex === root;
+                    const isInScale = scaleNotes.includes(noteIndex);
+                    let markerClass = 'note-marker';
+                    let displayText = '';
+                    if (isRoot) {
+                        markerClass += ' root visible';
+                        displayText = showIntervals ? 'R' : getNoteName(noteIndex);
+                    } else if (isInScale) {
+                        markerClass += ' scale-note visible';
+                        if (showIntervals) {
+                            const idx = scaleNotes.indexOf(noteIndex);
+                            displayText = INTERVALS[SCALES[scaleType].intervals[idx]].short;
+                        } else {
+                            displayText = getNoteName(noteIndex);
+                        }
+                    } else if (showAllNotes) {
+                        markerClass += ' other-note visible';
+                        displayText = getNoteName(noteIndex);
+                    }
+                    html += `<div class="fret"><div class="${markerClass}">${displayText}</div></div>`;
+                }
+                html += '</div>';
+            }
+            stringsContainer.innerHTML = html;
+
+            document.getElementById('fretNumbers').innerHTML = '<div class="fret-number"></div>' + 
+                Array.from({length: 18}, (_, i) => `<div class="fret-number">${i + 1}</div>`).join('');
+            
+            const POSITION_MARKS_18 = [0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 2, 0, 0, 1, 0, 0, 0];
+            document.getElementById('positionMarkers').innerHTML = '<div class="position-marker"></div>' +
+                POSITION_MARKS_18.map(m => `<div class="position-marker">${m === 1 ? '●' : m === 2 ? '●●' : ''}</div>`).join('');
+        }
+
+        function updateDisplay() {
+            updateIntervalsCompact();
+            updateScaleInfo();
+            updateFretboard();
+        }
+
+        document.addEventListener('DOMContentLoaded', updateDisplay);
+
+        // メトロノーム
+        let audioContext = null;
+        let currentBPM = 120;
+        let isPlaying = false;
+        let beatInterval = null;
+        let currentBeat = 1;
+        let beatsPerMeasure = 4;
+        let tapTimes = [];
+
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+        }
+
+        function changeBPM(delta) {
+            currentBPM = Math.max(40, Math.min(240, currentBPM + delta));
+            document.getElementById('bpmValue').textContent = currentBPM;
+            if (isPlaying) {
+                stopMetronome();
+                startMetronome();
+            }
+        }
+
+        function changeTimeSignature() {
+            beatsPerMeasure = parseInt(document.getElementById('timeSigSelect').value);
+            updateBeatIndicators();
+            if (isPlaying) {
+                currentBeat = 1;
+            }
+        }
+
+        function updateBeatIndicators() {
+            const container = document.getElementById('beatIndicators');
+            let html = '';
+            for (let i = 0; i < beatsPerMeasure; i++) {
+                html += `<div class="beat-dot ${i === 0 ? 'first' : ''}"></div>`;
+            }
+            container.innerHTML = html;
+        }
+
+        function toggleMetronome() {
+            if (isPlaying) {
+                stopMetronome();
+            } else {
+                startMetronome();
+            }
+        }
+
+        function startMetronome() {
+            initAudio();
+            isPlaying = true;
+            currentBeat = 1;
+            document.getElementById('startBtn').textContent = 'STOP';
+            document.getElementById('startBtn').classList.add('active');
+            
+            playBeat();
+            const intervalMs = (60 / currentBPM) * 1000;
+            beatInterval = setInterval(() => {
+                currentBeat = (currentBeat % beatsPerMeasure) + 1;
+                playBeat();
+            }, intervalMs);
+        }
+
+        function stopMetronome() {
+            isPlaying = false;
+            if (beatInterval) {
+                clearInterval(beatInterval);
+                beatInterval = null;
+            }
+            document.getElementById('startBtn').textContent = 'START';
+            document.getElementById('startBtn').classList.remove('active');
+            
+            document.querySelectorAll('.beat-dot').forEach(dot => dot.classList.remove('active'));
+            currentBeat = 1;
+        }
+
+        function playBeat() {
+            if (!audioContext) return;
+            
+            const isAccent = currentBeat === 1;
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(isAccent ? 1000 : 800, audioContext.currentTime);
+            oscillator.type = 'square';
+            
+            gainNode.gain.setValueAtTime(isAccent ? 0.15 : 0.1, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.05);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.05);
+            
+            const dots = document.querySelectorAll('.beat-dot');
+            dots.forEach((dot, i) => {
+                if (i === currentBeat - 1) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+
+        function handleTap() {
+            initAudio();
+            const now = Date.now();
+            tapTimes.push(now);
+            
+            if (tapTimes.length > 4) {
+                tapTimes.shift();
+            }
+            
+            if (tapTimes.length >= 2) {
+                const intervals = [];
+                for (let i = 1; i < tapTimes.length; i++) {
+                    intervals.push(tapTimes[i] - tapTimes[i - 1]);
+                }
+                const avgInterval = intervals.reduce((a, b) => a + b) / intervals.length;
+                const calculatedBPM = Math.round(60000 / avgInterval);
+                
+                if (calculatedBPM >= 40 && calculatedBPM <= 240) {
+                    currentBPM = calculatedBPM;
+                    document.getElementById('bpmValue').textContent = currentBPM;
+                    
+                    if (isPlaying) {
+                        stopMetronome();
+                        startMetronome();
+                    }
+                }
+            }
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+            oscillator.type = 'triangle';
+            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.1);
+        }
+    </script>
+</body>
+</html>
